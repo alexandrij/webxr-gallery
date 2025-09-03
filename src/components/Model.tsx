@@ -13,19 +13,21 @@ export const Model: FC<Props> = ({ object, isSelected, onSelect }) => {
   const color = GEOMETRY_COLORS[object.geometryType];
 
   const geometryEl = useMemo(() => {
+    const name = `${object.name}-geometry`;
+
     switch (object.geometryType) {
       case 'box':
-        return <boxGeometry args={[1, 1, 1]} />;
+        return <boxGeometry args={[1, 1, 1]} name={name} />;
       case 'sphere':
-        return <sphereGeometry args={[0.5, 32, 32]} />;
+        return <sphereGeometry args={[0.5, 32, 32]} name={name} />;
       case 'cone':
-        return <coneGeometry args={[0.5, 1, 32]} />;
+        return <coneGeometry args={[0.5, 1, 32]} name={name} />;
       case 'torus':
-        return <torusGeometry args={[0.5, 0.2, 16, 100]} />;
+        return <torusGeometry args={[0.5, 0.2, 16, 100]} name={name} />;
       case 'octahedron':
-        return <octahedronGeometry args={[0.5]} />;
+        return <octahedronGeometry args={[0.5]} name={name} />;
       default:
-        return <boxGeometry args={[1, 1, 1]} />;
+        return <boxGeometry args={[1, 1, 1]} name={name} />;
     }
   }, [object.geometryType]);
 
@@ -38,9 +40,11 @@ export const Model: FC<Props> = ({ object, isSelected, onSelect }) => {
         onClick={() => onSelect?.(object)}
         castShadow
         receiveShadow
+        name={`${object.name}-mesh`}
       >
         {geometryEl}
-        <meshLambertMaterial color={isSelected ? '#ffff00' : color} emissive={isSelected ? '#444400' : '#000000'} />
+        <meshLambertMaterial color={isSelected ? '#ffff00' : color} emissive={isSelected ? '#444400' : '#000000'}
+                             name={`${object.name}-meshLambertMaterial`} />
       </mesh>
     </group>
   );
