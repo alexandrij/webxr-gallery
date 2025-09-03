@@ -15,9 +15,8 @@ export const GEOMETRY_COLORS: Record<GeometryType, string> = {
   sphere: '#00ff00',
   cone: '#0000ff',
   torus: '#ffff00',
-  octahedron: '#ff00ff'
+  octahedron: '#ff00ff',
 };
-
 
 // export const MODEL_PATHS = [
 //   '/models/model1.glb',

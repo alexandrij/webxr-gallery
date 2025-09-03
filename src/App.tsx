@@ -1,79 +1,26 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 import { Canvas } from '@react-three/fiber';
-import { createXRStore, XR } from '@react-three/xr';
+import { XR } from '@react-three/xr';
 
 import { MODEL_URLS } from './constants';
 import { createFeature } from './utils';
-import { Feature } from './types';
 import { ControlPanel, GalleryScene } from './components';
+import { xrStore, appStore } from './stores';
 import styles from './App.module.css';
 
-const store = createXRStore({
-  hand: { right: true, left: true },
-});
-
-export const App = () => {
-  const [isVRMode, setIsVRMode] = useState(!!store.getState().mode);
-  const [objects, setObjects] = useState<Feature[]>([]);
-  const [selectedObject, setSelectedObject] = useState<Feature | undefined>();
-
-  // VR Режим
-  const onVRToggle = useCallback(() => {
-    !store.getState().mode
-      ? store.enterVR().then((session) => setIsVRMode(!!session))
-      : store.getState().session?.end().then(() => setIsVRMode(false));
-  }, []);
-
-  // Выбор объекта
-  const onObjectSelect = useCallback((object: Feature) => {
-    if (selectedObject?.id === object.id) {
-      setSelectedObject(undefined);
-    } else {
-      setSelectedObject(object);
-    }
-  }, []);
-
-  // Удаление объекта
-  const onObjectDelete = useCallback((object: Feature) => {
-    setObjects(prev => prev.filter(obj => obj.id !== object.id));
-
-    if (selectedObject?.id === object.id) {
-      setSelectedObject(undefined);
-    }
-  }, []);
-
-  // Добавление случайного объекта
-  const addRandomObject = useCallback(() => {
-    const newObject = createFeature();
-
-    setObjects(prev => [...prev, newObject]);
-  }, [objects]);
-
+export const App = observer(() => {
+  // Инициализация объектов
   useEffect(() => {
-    setObjects(new Array(MODEL_URLS.length).fill(null).map(() => createFeature()));
+    appStore.setObjects(new Array(MODEL_URLS.length).fill(null).map(() => createFeature()));
   }, []);
 
   return (
     <div className={styles.app}>
-      <ControlPanel
-        isVRMode={isVRMode}
-        selectedObject={selectedObject}
-        objectCount={objects.length}
-        onVRToggle={onVRToggle}
-        onAddObject={addRandomObject}
-      />
-      <Canvas
-        shadows
-        camera={{ position: [0, 1.6, 5], fov: 75 }}
-        gl={{ antialias: true }}
-      >
-        <XR store={store}>
-          <GalleryScene
-            objects={objects}
-            selectedObject={selectedObject}
-            onObjectSelect={onObjectSelect}
-            onObjectDelete={onObjectDelete}
-          />
+      <ControlPanel />
+      <Canvas shadows camera={{ position: [0, 1.6, 5], fov: 75 }} gl={{ antialias: true }}>
+        <XR store={xrStore}>
+          <GalleryScene />
         </XR>
 
         {/* Освещение и окружение */}
@@ -89,5 +36,4 @@ export const App = () => {
       </Canvas>
     </div>
   );
-};
-
+});

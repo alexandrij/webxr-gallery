@@ -1,47 +1,54 @@
 import { FC, useCallback, useState } from 'react';
 import * as THREE from 'three';
+import { XRInputSourceStateMap } from '@pmndrs/xr/internals';
 
 import { Feature } from '../types';
 
 import { Model } from './Model';
 import { useXRControllerButtonEvent, useXRInputSourceState } from '@react-three/xr';
 import { useFrame } from '@react-three/fiber';
-import { XRInputSourceStateMap } from '@pmndrs/xr/internals';
+import { appStore } from '../stores';
+import { observer } from 'mobx-react-lite';
 
-interface Props {
-  objects: Feature[];
-  selectedObject?: Feature | null;
-  onObjectSelect: (object: Feature) => void;
-  onObjectDelete: (object: Feature) => void;
-}
+export const GalleryScene: FC = observer(() => {
+  // Выбор объекта
+  const onObjectSelect = useCallback((object: Feature) => {
+    if (appStore.selectedObject?.id === object.id) {
+      appStore.selectObject(null);
+    } else {
+      appStore.selectObject(object);
+    }
+  }, []);
 
-export const GalleryScene: FC<Props> = ({
-  objects,
-  selectedObject,
-  onObjectSelect,
-  onObjectDelete,
-}) => {
+  // Удаление объекта
+  const onObjectDelete = useCallback((object: Feature) => {
+    appStore.deleteObject(object);
+  }, []);
+
   const [grabbedObject, setGrabbedObject] = useState<{
     object: Feature;
-    offset: THREE.Vector3
+    offset: THREE.Vector3;
   } | null>(null);
 
   const leftController = useXRInputSourceState('controller', 'left');
   const rightController = useXRInputSourceState('controller', 'right');
 
   // Обработчик захвата объекта
-  const handleGrab = useCallback((controller: XRInputSourceStateMap['controller'], object: Feature) => {
-    if (!controller) return;
+  const handleGrab = useCallback(
+    (controller: XRInputSourceStateMap['controller'], object: Feature) => {
+      if (!controller) return;
 
-    const controllerPosition = new THREE.Vector3();
-    controller.object?.getWorldPosition(controllerPosition);
+      const controllerPosition = new THREE.Vector3();
+      controller.object?.getWorldPosition(controllerPosition);
 
-    const objectPosition = new THREE.Vector3(...object.position);
-    const offset = objectPosition.clone().sub(controllerPosition);
+      const objectPosition = new THREE.Vector3(...object.position);
+      const offset = objectPosition.clone().sub(controllerPosition);
 
-    setGrabbedObject({ object, offset });
-    onObjectSelect(object);
-  }, [onObjectSelect]);
+      setGrabbedObject({ object, offset });
+      onObjectSelect(object);
+    },
+    [onObjectSelect],
+  );
 
   // Обработчик отпускания объекта
   const handleRelease = useCallback(() => {
@@ -50,14 +57,14 @@ export const GalleryScene: FC<Props> = ({
 
   // События захвата для кнопок
   useXRControllerButtonEvent(leftController, 'squeeze', () => {
-    if (selectedObject && !grabbedObject && leftController) {
-      handleGrab(leftController, selectedObject);
+    if (appStore.selectedObject && !grabbedObject && leftController) {
+      handleGrab(leftController, appStore.selectedObject);
     }
   });
 
   useXRControllerButtonEvent(rightController, 'squeeze', () => {
-    if (selectedObject && !grabbedObject && rightController) {
-      handleGrab(rightController, selectedObject);
+    if (appStore.selectedObject && !grabbedObject && rightController) {
+      handleGrab(rightController, appStore.selectedObject);
     }
   });
 
@@ -67,14 +74,14 @@ export const GalleryScene: FC<Props> = ({
 
   // Удаление объекта через кнопку X
   useXRControllerButtonEvent(leftController, 'x-button', () => {
-    if (selectedObject && !grabbedObject) {
-      onObjectDelete(selectedObject);
+    if (appStore.selectedObject && !grabbedObject) {
+      onObjectDelete(appStore.selectedObject);
     }
   });
 
   useXRControllerButtonEvent(rightController, 'x-button', () => {
-    if (selectedObject && !grabbedObject) {
-      onObjectDelete(selectedObject);
+    if (appStore.selectedObject && !grabbedObject) {
+      onObjectDelete(appStore.selectedObject);
     }
   });
 
@@ -117,14 +124,14 @@ export const GalleryScene: FC<Props> = ({
       </mesh>
 
       {/* 3D модели */}
-      {objects.map((object) => (
+      {appStore.objects.map((object) => (
         <Model
           key={object.id}
           object={object}
-          isSelected={selectedObject?.id === object.id}
+          isSelected={appStore.selectedObject?.id === object.id}
           onSelect={() => onObjectSelect(object)}
         />
       ))}
     </>
   );
-};
+});

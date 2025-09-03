@@ -1,54 +1,38 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
+import { observer } from 'mobx-react-lite';
 
-import { Feature } from '../types';
+import { appStore } from '../stores';
 
 import styles from './InfoPanel.module.css';
+import { createFeature } from '../utils';
 
-interface Props {
-  selectedObject?: Feature;
-  polygonCount?: number;
-  objectCount?: number;
-  isVRMode?: boolean;
-  onVRToggle?: () => void;
-  onAddObject?: () => void;
-}
+export const ControlPanel: FC = observer(() => {
+  const onAddObject = useCallback(() => {
+    appStore.addObject(createFeature());
+  }, []);
 
-export const ControlPanel: FC<Props> = ({
-  selectedObject,
-  polygonCount,
-  objectCount,
-  isVRMode,
-  onVRToggle,
-  onAddObject,
-}) => {
+  const onVRToggle = useCallback(() => {
+    appStore.toggleVrMode();
+  }, []);
+
   return (
     <div className={styles.infoPanel}>
       <h2>WebXR Галерея</h2>
 
       <div className={styles.infoItem}>
-        <strong>Выбранный объект:</strong> {selectedObject?.name || 'Нет'}
+        <strong>Выбранный объект:</strong> {appStore.selectedObject?.name || 'Нет'}
       </div>
 
       <div className={styles.infoItem}>
-        <strong>Полигоны:</strong> {polygonCount}
-      </div>
-
-      <div className={styles.infoItem}>
-        <strong>Объектов на сцене:</strong> {objectCount}
+        <strong>Объектов на сцене:</strong> {appStore.objects.length}
       </div>
 
       <div className={styles.buttonGroup}>
-        <button
-          className={styles.vrButton}
-          onClick={onVRToggle}
-        >
-          {isVRMode ? 'Выйти из VR' : 'VR Mode'}
+        <button className={styles.vrButton} onClick={onVRToggle}>
+          {appStore.isVRMode ? 'Выйти из VR' : 'VR Mode'}
         </button>
 
-        <button
-          className={styles.addObjectButton}
-          onClick={onAddObject}
-        >
+        <button className={styles.addObjectButton} onClick={onAddObject}>
           Добавить объект
         </button>
       </div>
@@ -63,4 +47,4 @@ export const ControlPanel: FC<Props> = ({
       </div>
     </div>
   );
-};
+});

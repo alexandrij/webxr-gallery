@@ -9,11 +9,7 @@ interface Props {
   onSelect?: (object: Feature) => void;
 }
 
-export const Model: FC<Props> = ({
-  object,
-  isSelected,
-  onSelect,
-}) => {
+export const Model: FC<Props> = ({ object, isSelected, onSelect }) => {
   const color = GEOMETRY_COLORS[object.geometryType];
 
   const geometryEl = useMemo(() => {
@@ -44,10 +40,7 @@ export const Model: FC<Props> = ({
         receiveShadow
       >
         {geometryEl}
-        <meshLambertMaterial
-          color={isSelected ? '#ffff00' : color}
-          emissive={isSelected ? '#444400' : '#000000'}
-        />
+        <meshLambertMaterial color={isSelected ? '#ffff00' : color} emissive={isSelected ? '#444400' : '#000000'} />
       </mesh>
     </group>
   );
