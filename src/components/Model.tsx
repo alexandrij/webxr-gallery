@@ -6,10 +6,13 @@ import { GEOMETRY_COLORS } from '../constants';
 interface Props {
   object: Feature;
   isSelected?: boolean;
+  isHovered?: boolean;
   onSelect?: (object: Feature) => void;
+  onHover?: (object: Feature) => void;
+  onUnhover?: (object: Feature) => void;
 }
 
-export const Model: FC<Props> = ({ object, isSelected, onSelect }) => {
+export const Model: FC<Props> = ({ object, isSelected, isHovered, onSelect, onHover, onUnhover }) => {
   const color = GEOMETRY_COLORS[object.geometryType];
 
   const geometryEl = useMemo(() => {
@@ -38,13 +41,17 @@ export const Model: FC<Props> = ({ object, isSelected, onSelect }) => {
         rotation={object.rotation}
         scale={object.scale}
         onClick={() => onSelect?.(object)}
+        onPointerOver={() => onHover?.(object)}
+        onPointerOut={() => onUnhover?.(object)}
         castShadow
         receiveShadow
         name={`${object.name}-mesh`}
       >
         {geometryEl}
-        <meshLambertMaterial color={isSelected ? '#ffff00' : color} emissive={isSelected ? '#444400' : '#000000'}
-                             name={`${object.name}-meshLambertMaterial`} />
+        <meshLambertMaterial color={isSelected ? '#ffff00' : isHovered ? `#ff3000` : color}
+                             emissive={isSelected ? '#444400' : isHovered ? '#444000' : '#000000'}
+                             name={`${object.name}-meshLambertMaterial`}
+        />
       </mesh>
     </group>
   );

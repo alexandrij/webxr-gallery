@@ -20,6 +20,15 @@ export const GalleryScene: FC = observer(() => {
     }
   }, []);
 
+  // Наведение объекта
+  const onObjectHover = useCallback((object: Feature | null) => {
+    appStore.hoverObject(object);
+
+    if (object) {
+      console.debug(`onObjectHover: Объект: ${object?.name}; Тип: ${object?.geometryType}`);
+    }
+  }, []);
+
   // Удаление объекта
   const onObjectDelete = useCallback((object: Feature) => {
     appStore.deleteObject(object);
@@ -129,7 +138,10 @@ export const GalleryScene: FC = observer(() => {
           key={object.id}
           object={object}
           isSelected={appStore.selectedObject?.id === object.id}
+          isHovered={appStore.hoveredObject?.id === object.id}
           onSelect={() => onObjectSelect(object)}
+          onHover={() => onObjectHover(object)}
+          onUnhover={() => onObjectHover(null)}
         />
       ))}
     </>

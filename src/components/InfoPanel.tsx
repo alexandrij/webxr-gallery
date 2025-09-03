@@ -6,7 +6,7 @@ import { appStore } from '../stores';
 import styles from './InfoPanel.module.css';
 import { createFeature } from '../utils';
 
-export const ControlPanel: FC = observer(() => {
+export const InfoPanel: FC = observer(() => {
   const onAddObject = useCallback(() => {
     appStore.addObject(createFeature());
   }, []);
@@ -37,7 +37,7 @@ export const ControlPanel: FC = observer(() => {
         </button>
       </div>
 
-      <div className="info-item">
+      <div className={styles.infoItem}>
         <strong>Управление:</strong>
         <ul style={{ marginTop: '10px', marginLeft: '20px' }}>
           <li>Лазерный луч - наведение на объекты</li>

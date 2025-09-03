@@ -5,7 +5,7 @@ import { XR } from '@react-three/xr';
 
 import { MODEL_URLS } from './constants';
 import { createFeature } from './utils';
-import { ControlPanel, GalleryScene } from './components';
+import { InfoPanel, GalleryScene } from './components';
 import { xrStore, appStore } from './stores';
 import styles from './App.module.css';
 
@@ -17,7 +17,7 @@ export const App = observer(() => {
 
   return (
     <div className={styles.app}>
-      <ControlPanel />
+      <InfoPanel />
       <Canvas shadows camera={{ position: [0, 1.6, 5], fov: 75 }} gl={{ antialias: true }}>
         <XR store={xrStore}>
           <GalleryScene />

@@ -22,15 +22,17 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 1000;
     min-width: 300px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .infoPanel h2 {
-    margin-bottom: 15px;
     color: #4caf50;
 }
 
 .infoItem {
-    margin-bottom: 10px;
     padding: 8px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
@@ -38,12 +40,13 @@ body {
 
 .buttonGroup {
     display: flex;
+    flex-direction: row;
     gap: 10px;
-    margin-top: 15px;
 }
 
 button {
-    padding: 10px 20px;
+    flex: 1;
+    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -55,12 +58,7 @@ button {
 
 button:hover {
     background: #45a049;
-    transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-button:active {
-    transform: translateY(0);
 }
 
 .vrButton {

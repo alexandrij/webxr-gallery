@@ -11,6 +11,8 @@ export class AppStore {
 
   selectedObject: Feature | null = null;
 
+  hoveredObject: Feature | null = null;
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -26,6 +28,14 @@ export class AppStore {
 
   selectObject(object: Feature | null) {
     this.selectedObject = object;
+  }
+
+  hoverObject(object: Feature | null) {
+    this.hoveredObject = object;
+  }
+
+  unhoverObject() {
+    this.hoveredObject = null;
   }
 
   setObjects(objects: Feature[]) {
